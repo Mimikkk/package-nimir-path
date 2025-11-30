@@ -1,9 +1,9 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { Path } from './a-path.js';
+import { Path, PathAt, PathOf, get, set } from './impl.js';
 
 type DeepPartial<T> = { [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P] };
 
-describe('a-path', () => {
+describe('dot-path', () => {
   type Item = { a: { b: { c: number } }; b: number };
   type Tuple = [string, [first: Item, second: Item]];
   type Array = Item[];
@@ -42,87 +42,82 @@ describe('a-path', () => {
       });
 
       it('should get path from nested object', () => {
-        type Item = { a: number, b: { c: Item } };
+        type Item = { a: number; b: { c: Item } };
 
         expectTypeOf<Path<Item>>().toEqualTypeOf<'a' | 'b' | 'b.c'>();
       });
 
       it('should get path from simplify nested object', () => {
-        type Item = { a: number, b: { a: number, b: Item } };
+        type Item = { a: number; b: { a: number; b: Item } };
 
         expectTypeOf<Path<Item>>().toEqualTypeOf<'a' | 'b'>();
       });
     });
 
-    describe('Path.Of<T, R>', () => {
+    describe('Of<T, R>', () => {
       it('should list all number paths in an object', () => {
-        expectTypeOf<Path.Of<Item, number>>().toEqualTypeOf<'b' | 'a.b.c'>();
+        expectTypeOf<PathOf<Item, number>>().toEqualTypeOf<'b' | 'a.b.c'>();
       });
 
       it('should list all object paths in an object', () => {
-        expectTypeOf<Path.Of<Item, { c: number }>>().toEqualTypeOf<'a.b'>();
+        expectTypeOf<PathOf<Item, { c: number }>>().toEqualTypeOf<'a.b'>();
       });
 
       it('should list all number paths in an array', () => {
-        expectTypeOf<Path.Of<Array, number>>().toEqualTypeOf<`${number}.b` | `${number}.a.b.c`>();
+        expectTypeOf<PathOf<Array, number>>().toEqualTypeOf<`${number}.b` | `${number}.a.b.c`>();
       });
 
       it('should list all object paths in an array', () => {
-        expectTypeOf<Path.Of<Array, { c: number }>>().toEqualTypeOf<`${number}.a.b`>();
+        expectTypeOf<PathOf<Array, { c: number }>>().toEqualTypeOf<`${number}.a.b`>();
       });
 
       it('should list all number paths in a tuple', () => {
-        expectTypeOf<Path.Of<Tuple, number>>().toEqualTypeOf<
-          | '1.0.b'
-          | '1.0.a.b.c'
-          | '1.1.b'
-          | '1.1.a.b.c'
-        >();
+        expectTypeOf<PathOf<Tuple, number>>().toEqualTypeOf<'1.0.b' | '1.0.a.b.c' | '1.1.b' | '1.1.a.b.c'>();
       });
 
       it('should list all object paths in a tuple', () => {
-        expectTypeOf<Path.Of<Tuple, { c: number }>>().toEqualTypeOf<'1.0.a.b' | '1.1.a.b'>();
+        expectTypeOf<PathOf<Tuple, { c: number }>>().toEqualTypeOf<'1.0.a.b' | '1.1.a.b'>();
       });
     });
 
-    describe('Path.At<T, P>', () => {
+    describe('At<T, P>', () => {
       it('should get type of value at path in object', () => {
-        expectTypeOf<Path.At<Item, 'a.b.c'>>().toEqualTypeOf<number>();
-        expectTypeOf<Path.At<Item, 'a.b'>>().toEqualTypeOf<{ c: number }>();
+        expectTypeOf<PathAt<Item, 'a.b.c'>>().toEqualTypeOf<number>();
+        expectTypeOf<PathAt<Item, 'a.b'>>().toEqualTypeOf<{ c: number }>();
       });
 
       it('should get type of value at path in array', () => {
-        expectTypeOf<Path.At<Array, `${number}.b` | `${number}.a.b.c`>>().toEqualTypeOf<number>();
+        expectTypeOf<PathAt<Array, `${number}.b` | `${number}.a.b.c`>>().toEqualTypeOf<number>();
       });
 
       it('should get type of value at path in tuple', () => {
-        expectTypeOf<Path.At<Tuple, '0'>>().toEqualTypeOf<string>();
-        expectTypeOf<Path.At<Tuple, '1.0' | '1.1'>>().toEqualTypeOf<Item>();
+        expectTypeOf<PathAt<Tuple, '0'>>().toEqualTypeOf<string>();
+        expectTypeOf<PathAt<Tuple, '1.0' | '1.1'>>().toEqualTypeOf<Item>();
       });
 
       it('should get type of an optional value at path in object', () => {
-        expectTypeOf<Path.At<DeepPartial<Item>, 'a.b.c' | 'b'>>().toEqualTypeOf<number | undefined>();
+        expectTypeOf<PathAt<DeepPartial<Item>, 'a.b.c' | 'b'>>().toEqualTypeOf<number | undefined>();
       });
     });
   });
 
-  describe('Path.get', () => {
+  describe('get', () => {
     it('should get value from object at path', () => {
-      const value = Path.get(item, 'a.b.c');
+      const value = get(item, 'a.b.c');
 
       expectTypeOf(value).toEqualTypeOf<number>();
       expect(value).toEqual(1);
     });
 
     it('should get value from array at path', () => {
-      const value = Path.get(array, '0.a.b.c');
+      const value = get(array, '0.a.b.c');
 
       expectTypeOf(value).toEqualTypeOf<number>();
       expect(value).toEqual(1);
     });
 
     it('should get value from tuple at path', () => {
-      const value = Path.get(tuple, '1.0.a.b.c');
+      const value = get(tuple, '1.0.a.b.c');
 
       expectTypeOf(value).toEqualTypeOf<number>();
       expect(value).toEqual(1);
@@ -131,30 +126,30 @@ describe('a-path', () => {
     it('should get optional value from object at path', () => {
       const item: DeepPartial<Item> = {};
 
-      const value = Path.get(item, 'a.b.c');
+      const value = get(item, 'a.b.c');
 
       expectTypeOf(value).toEqualTypeOf<number | undefined>();
       expect(value).toEqual(undefined);
     });
   });
 
-  describe('Path.set', () => {
+  describe('set', () => {
     it('should set value from object at path', () => {
-      const result = Path.set(structuredClone(item), 'a.b.c', 2);
+      const result = set(structuredClone(item), 'a.b.c', 2);
 
       expectTypeOf(result).toEqualTypeOf<Item>();
       expect(result).toEqual({ a: { b: { c: 2 } }, b: 2 });
     });
 
     it('should set value from array at path', () => {
-      const result = Path.set(structuredClone(array), '0.a.b.c', 2);
+      const result = set(structuredClone(array), '0.a.b.c', 2);
 
       expectTypeOf(result).toEqualTypeOf<Array>();
       expect(result).toEqual([{ a: { b: { c: 2 } }, b: 2 }, item]);
     });
 
     it('should set value from tuple at path', () => {
-      const result = Path.set(structuredClone(tuple), '1.0.a.b.c', 2);
+      const result = set(structuredClone(tuple), '1.0.a.b.c', 2);
 
       expectTypeOf(result).toEqualTypeOf<Tuple>();
       expect(result).toEqual(['a', [{ a: { b: { c: 2 } }, b: 2 }, item]]);
@@ -163,7 +158,7 @@ describe('a-path', () => {
     it('should set optional value from object at path', () => {
       const item: DeepPartial<Item> = {};
 
-      const result = Path.set(structuredClone(item), 'a.b.c', 2);
+      const result = set(structuredClone(item), 'a.b.c', 2);
 
       expectTypeOf(result).toEqualTypeOf<DeepPartial<Item>>();
       expect(result).toEqual({ a: { b: { c: 2 } } });

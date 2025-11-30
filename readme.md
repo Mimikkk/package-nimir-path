@@ -1,39 +1,45 @@
-# @nimir/a-path - Typescript friendly object/tuple path resolve
+# @nimir/dot-path - Typescript friendly object/tuple path resolve
 
-<a href="https://www.npmjs.com/package/@nimir/a-path">
-  <img alt="npm version" src="https://img.shields.io/npm/v/@nimir/a-path.svg?style=flat-square" />
+<a href="https://www.npmjs.com/package/@nimir/dot-path">
+  <img alt="npm version" src="https://img.shields.io/npm/v/@nimir/dot-path.svg?style=flat-square" />
 </a>
-<a href="https://www.npmjs.com/package/@nimir/a-path">
-  <img alt="npm downloads" src="https://img.shields.io/npm/dm/@nimir/a-path.svg?style=flat-square" />
+<a href="https://www.npmjs.com/package/@nimir/dot-path">
+  <img alt="npm downloads" src="https://img.shields.io/npm/dm/@nimir/dot-path.svg?style=flat-square" />
 </a>
 
-Full thanks to [gmarkov](https://github.com/g-makarov) and
-his [dot-path-value](https://github.com/g-makarov/dot-path-value).
+Full thanks to [gmarkov](https://github.com/g-makarov) and his [dot-path-value](https://github.com/g-makarov/dot-path-value).
 
-This is an extension of this library, with API changes and an addition of `At`, `Of` type utilities, and changes
-to `get`/`set`.
+This is a library allowing for performant extraction and setting of nested elements via a typesafe dot-path.
 
 ## Install
 
 ```bash
-pnpm install @nimir/a-path
+pnpm install @nimir/dot-path
 ```
 
 ```bash
-npm install @nimir/a-path
+npm install @nimir/dot-path
 ```
 
 ```bash
-yarn add @nimir/a-path
+yarn add @nimir/dot-path
+```
+
+```bash
+deno install npm:@nimir/dot-path
+```
+
+```bash
+bun install npm:@nimir/dot-path
 ```
 
 ## Features
 
 - `Path<T>` - Get all paths of T in dotted string format.
-- `Path.At<T, Y>` - Get the type of value at path Y of T.
-- `Path.Of<T, Y>` - Get all paths with type Y of T in dotted string format.
-- `Path.get(item, path)` - Get value by path with type-safety.
-- `Path.set(item, path, value)` - Set value by path with type-safety.
+- `PathAt<T, Y>` - Get the type of value at path Y of T.
+- `PathOf<T, Y>` - Get all paths with type Y of T in dotted string format.
+- `get(item, path)` - Get value by path with type-safety.
+- `set(item, path, value)` - Set value by path with type-safety.
 - Supports object, array, tuple and recursive types.
 
 ## Usage
@@ -41,7 +47,7 @@ yarn add @nimir/a-path
 ### Usage of Path utilities
 
 ```ts
-import type { Path } from '@nimir/a-path';
+import type { Path } from '@nimir/dot-path';
 type Item = {
   a: { b: { c: string } };
   b: number;
@@ -51,25 +57,25 @@ type Item = {
 Path<Item>;
 //   ^? "a.b.c" | "b" | "a.b" | "a"
 
-Path.Of<Item, string>;
+PathOf<Item, string>;
 //   ^? "a.b.c" | "c"
 
-Path.Of<Item, number | string>;
+PathOf<Item, number | string>;
 //   ^? "a.b.c" | "b" | "c"
 
-Path.Of<Item, { c: number }>;
+PathOf<Item, { c: number }>;
 //   ^? "a.b"
 
-Path.At<Item, 'a.b.c'>;
+PathAt<Item, 'a.b.c'>;
 //   ^? string
 
-Path.At<Item, 'a.b'>;
+PathAt<Item, 'a.b'>;
 //   ^? { c: string }
 
-Path.At<Item, 'a.b.c.d'>;
+PathAt<Item, 'a.b.c.d'>;
 //   ^? never
 
-Path.At<Item, 'a.b.c' | 'a.b'>;
+PathAt<Item, 'a.b.c' | 'a.b'>;
 //   ^? string | { c: string }
 
 type RecursiveItem = {
@@ -84,7 +90,7 @@ Path<RecursiveItem>;
 ### Usage with an object
 
 ```ts
-import { Path } from '@nimir/a-path';
+import { get, set } from '@nimir/dot-path';
 
 type Item = {
   a: { b: { c: string } };
@@ -98,28 +104,28 @@ const item: Item = {
   c: 'world!',
 };
 
-Path.get(item, 'a.b.c');
+get(item, 'a.b.c');
 // -> string
-Path.get(item, 'a.b');
+get(item, 'a.b');
 // -> number
-Path.get(item, 'himom!');
-// Throws!
+get(item, 'himom!');
+// undefined
 
-Path.set(item, 'a.b.c', 'himom!');
+set(item, 'a.b.c', 'himom!');
 // valid
-Path.set(item, 'a.b.c', 0xbeef);
+set(item, 'a.b.c', 0xbeef);
 // invalid
-Path.set(item, 'a.b', { c: 'himom!' });
+set(item, 'a.b', { c: 'himom!' });
 // valid
 ```
 
 ### Usage with a tuple
 
 ```ts
-import { Path } from '@nimir/a-path';
+import { get, set } from '@nimir/dot-path';
 
 type Item = {
-  a: { b: { c: string; } },
+  a: { b: { c: string } };
   b: number;
 };
 
@@ -127,29 +133,29 @@ type Tuple = [string, [first: Item, second: Item]];
 
 const tuple: Tuple = ['hello', [item, item]];
 
-Path.get(tuple, '0');
+get(tuple, '0');
 // -> string
-Path.get(tuple, '1.0.a.b.c');
+get(tuple, '1.0.a.b.c');
 // -> string
-Path.get(tuple, '1');
+get(tuple, '1');
 // -> [first: Item, second: Item]
-Path.get(tuple, 'himom!');
-// Throws!
+get(tuple, 'himom!');
+// undefined
 
-Path.set(tuple, '0', 'himom!');
+set(tuple, '0', 'himom!');
 // valid
-Path.set(tuple, '1.0.a.b.c', 'himom!');
+set(tuple, '1.0.a.b.c', 'himom!');
 // valid
-Path.set(tuple, '1.0.a.b.c', 0xbeef);
+set(tuple, '1.0.a.b.c', 0xbeef);
 // invalid
-Path.set(tuple, '1.0.a.b', { c: 'himom!' });
+set(tuple, '1.0.a.b', { c: 'himom!' });
 // valid
 ```
 
 ### Usage with an array
 
 ```ts
-import { Path } from '@nimir/a-path';
+import { Path } from '@nimir/dot-path';
 
 type Item = {
   a: { b: { c: string } };
@@ -159,19 +165,19 @@ type Item = {
 
 const items: Item[] = [item, item];
 
-Path.get(items, '0');
+get(items, '0');
 // -> Item
-Path.get(items, '1.a.b.c');
+get(items, '1.a.b.c');
 // -> string
-Path.get(items, 'himom!');
-// Throws!
+get(items, 'himom!');
+// undefined
 
-Path.set(items, '0', { a: { b: { c: 'himom!' } }, b: 0xbeef });
+set(items, '0', { a: { b: { c: 'himom!' } }, b: 0xbeef });
 // valid
-Path.set(items, '1.a.b.c', 'himom!');
+set(items, '1.a.b.c', 'himom!');
 // valid
-Path.set(items, '1.a.b.c', 0xbeef);
+set(items, '1.a.b.c', 0xbeef);
 // invalid
-Path.set(items, '1.a.b', { c: 'himom!' });
+set(items, '1.a.b', { c: 'himom!' });
 // valid
 ```

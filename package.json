@@ -1,7 +1,7 @@
 {
-  "name": "@nimir/a-path",
-  "version": "2.0.2",
-  "description": "Dotted path resolve for typescript",
+  "name": "@nimir/dot-path",
+  "version": "3.0.0",
+  "description": "Dot path resolver for typescript",
   "keywords": [
     "Typescript",
     "dottedpath",
@@ -17,27 +17,26 @@
     "change",
     "typesafe"
   ],
-  "homepage": "https://www.github.com/Mimikkk/a-path",
+  "homepage": "https://www.github.com/Mimikkk/dot-path",
   "bugs": {
-    "url": "https://github.com/Mimikkk/a-path/issues"
+    "url": "https://github.com/Mimikkk/dot-path/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mimikkk/a-path.git"
+    "url": "git+https://github.com/Mimikkk/dot-path.git"
   },
   "license": "MIT",
   "author": "Daniel Zdancewicz <zdancewicz.daniel@gmail.com>",
   "type": "module",
   "exports": {
-    "require": "./build/a-path.cjs.js",
-    "default": "./build/a-path.es.js",
-    "types": "./build/a-path.d.ts"
+    "types": "./build/dot-path.d.ts",
+    "require": "./build/dot-path.cjs.js",
+    "default": "./build/dot-path.es.js"
   },
-  "main": "./build/a-path.cjs.js",
-  "unpkg": "./build/a-path.umd.js",
-  "module": "./build/a-path.es.js",
-  "source": "./src/a-path.ts",
-  "types": "./build/a-path.d.ts",
+  "main": "./build/dot-path.cjs.js",
+  "unpkg": "./build/dot-path.umd.js",
+  "module": "./build/dot-path.es.js",
+  "source": "./src/dot-path.ts",
   "files": [
     "build",
     "src/",
@@ -46,18 +45,19 @@
     "vite.config.ts"
   ],
   "scripts": {
-    "build": "pnpm run build:clear && concurrently -n build: 'pnpm:build:*' -c=bgBlue.bold,green.bold,red.bold",
+    "build": "pnpm run build:clear && concurrently -n build: 'pnpm:build:*' -c=cyan.bold,green.bold,blue.bold",
     "build:clear": "rimraf build",
     "build:lib": "vite build",
     "build:tsc": "tsc --project tsconfig.library.json",
-    "test": "vitest test"
+    "test": "vitest test",
+    "bench": "vitest bench"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "prettier": "^3.2.5",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.4.2",
-    "vite": "^5.1.5",
-    "vitest": "^1.3.1"
+    "concurrently": "^9.2.1",
+    "prettier": "^3.7.3",
+    "rimraf": "^6.1.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4",
+    "vitest": "^4.0.14"
   }
 }

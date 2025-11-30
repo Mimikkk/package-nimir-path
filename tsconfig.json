@@ -10,21 +10,9 @@
     "strictNullChecks": true,
     "moduleResolution": "bundler",
     "outDir": "build",
-    "lib": [
-      "DOM",
-      "ESNext"
-    ],
-    "types": [
-      "vite/client"
-    ]
+    "lib": ["DOM", "ESNext"],
+    "types": ["vite/client"]
   },
-  "include": [
-    "src",
-    "readme.md"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.vite.json"
-    }
-  ]
+  "include": ["src", "readme.md"],
+  "references": [{ "path": "./tsconfig.vite.json" }]
 }
