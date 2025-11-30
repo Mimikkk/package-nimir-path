@@ -11,7 +11,7 @@
     "moduleResolution": "bundler",
     "outDir": "build",
     "lib": ["DOM", "ESNext"],
-    "types": ["vite/client"]
+    "types": ["rolldown-vite/client"]
   },
   "include": ["src", "readme.md"],
   "references": [{ "path": "./tsconfig.vite.json" }]

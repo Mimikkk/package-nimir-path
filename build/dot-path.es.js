@@ -1,24 +1,18 @@
-function c(r, i) {
-  try {
-    const s = i.split(".");
-    let e = r;
-    for (let t = 0, n = s.length; t < n; ++t)
-      e = e[s[t]];
-    return e;
-  } catch {
-    return;
-  }
+function get(e, t) {
+	try {
+		let n = t.split("."), r = e;
+		for (let e = 0, t = n.length; e < t; ++e) r = r[n[e]];
+		return r;
+	} catch {
+		return;
+	}
 }
-function g(r, i, s) {
-  const e = i.split(".");
-  let t = r;
-  for (let n = 0, o = e.length - 1; n < o; ++n) {
-    const l = e[n];
-    l in t || (t[l] = {}), t = t[l];
-  }
-  return t[e[e.length - 1]] = s, r;
+function set(e, t, n) {
+	let r = t.split("."), i = e;
+	for (let e = 0, t = r.length - 1; e < t; ++e) {
+		let t = r[e];
+		t in i || (i[t] = {}), i = i[t];
+	}
+	return i[r[r.length - 1]] = n, e;
 }
-export {
-  c as get,
-  g as set
-};
+export { get, set };

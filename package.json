@@ -45,19 +45,15 @@
     "vite.config.ts"
   ],
   "scripts": {
-    "build": "pnpm run build:clear && concurrently -n build: 'pnpm:build:*' -c=cyan.bold,green.bold,blue.bold",
-    "build:clear": "rimraf build",
-    "build:lib": "vite build",
-    "build:tsc": "tsc --project tsconfig.library.json",
+    "build": "vite build",
     "test": "vitest test",
     "bench": "vitest bench"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
+    "vite-plugin-dts": "^4.5.4",
     "prettier": "^3.7.3",
-    "rimraf": "^6.1.2",
     "typescript": "^5.9.3",
-    "vite": "^7.2.4",
+    "rolldown-vite": "^7.2.8",
     "vitest": "^4.0.14"
   }
 }

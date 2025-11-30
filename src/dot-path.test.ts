@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { Path, PathAt, PathOf, get, set } from './impl.js';
+import { Path, PathAt, PathOf, get, set } from './dot-path.js';
 
 type DeepPartial<T> = { [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P] };
 

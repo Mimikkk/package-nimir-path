@@ -155,7 +155,7 @@ set(tuple, '1.0.a.b', { c: 'himom!' });
 ### Usage with an array
 
 ```ts
-import { Path } from '@nimir/dot-path';
+import { get, set } from '@nimir/dot-path';
 
 type Item = {
   a: { b: { c: string } };

@@ -1,8 +1,8 @@
 import { bench, BenchOptions, describe } from 'vitest';
 
-type Package = typeof import('./impl.js');
+type Package = typeof import('./dot-path.js');
 
-const impl_1: Package = await import('./impl.js');
+const impl_1: Package = await import('./dot-path.js');
 
 const impl_2: Package = {
   get: (item, path) => {

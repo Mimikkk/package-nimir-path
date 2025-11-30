@@ -1,5 +1,4 @@
-import type { AtImpl, OfImpl, PathImpl } from './impl.types.js';
-
+import { AtImpl, OfImpl, PathImpl } from './dot-path.types.js';
 /**
  * Type representing all possible paths in an object.
  *
@@ -10,7 +9,6 @@ import type { AtImpl, OfImpl, PathImpl } from './impl.types.js';
  * >> "a" | "a.b" | "a.b.c" | "b"
  */
 export type Path<T> = PathImpl<T>;
-
 /**
  * Type that represents the value type at a given path in an object.
  *
@@ -23,7 +21,6 @@ export type Path<T> = PathImpl<T>;
  * >> number
  */
 export type PathAt<TData, TPath extends Path<TData>> = AtImpl<TData, TPath>;
-
 /**
  * Type that represents all paths in an object that lead to a value of a given type.
  *
@@ -35,7 +32,6 @@ export type PathAt<TData, TPath extends Path<TData>> = AtImpl<TData, TPath>;
  * >> "a.b.c" | "b"
  */
 export type PathOf<TData, TExpectedType> = OfImpl<TData, TExpectedType>;
-
 /**
  * Retrieves the value at the given path within an object.
  *
@@ -50,23 +46,7 @@ export type PathOf<TData, TExpectedType> = OfImpl<TData, TExpectedType>;
  * Path.get(item, 'a.b.c');
  * >> 1
  */
-export function get<const TData, TPath extends Path<TData>>(
-  item: TData,
-  path: TPath,
-): PathAt<NoInfer<TData>, NoInfer<TPath>> {
-  try {
-    const segments = path.split('.');
-
-    let result = item as never;
-    for (let i = 0, it = segments.length; i < it; ++i) {
-      result = result[segments[i]];
-    }
-    return result;
-  } catch {
-    return undefined!;
-  }
-}
-
+export declare function get<const TData, TPath extends Path<TData>>(item: TData, path: TPath): PathAt<NoInfer<TData>, NoInfer<TPath>>;
 /**
  * Sets the value at the given path within an object.
  *
@@ -85,23 +65,4 @@ export function get<const TData, TPath extends Path<TData>>(
  * Path.set(item, 'a.b.c', 2);
  * >> { a: { b: { c: 2 } } }
  */
-export function set<const TData, TPath extends Path<TData>>(
-  item: TData,
-  path: TPath,
-  value: PathAt<NoInfer<TData>, NoInfer<TPath>>,
-): TData {
-  const segments = path.split('.');
-
-  let target = item as any;
-  for (let i = 0, it = segments.length - 1; i < it; ++i) {
-    const key = segments[i];
-
-    if (!(key in target)) target[key] = {};
-
-    target = target[key];
-  }
-
-  target[segments[segments.length - 1]] = value;
-
-  return item;
-}
+export declare function set<const TData, TPath extends Path<TData>>(item: TData, path: TPath, value: PathAt<NoInfer<TData>, NoInfer<TPath>>): TData;
