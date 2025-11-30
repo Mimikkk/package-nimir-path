@@ -1,6 +1,6 @@
 {
   "name": "@nimir/dot-path",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Dot path resolver for typescript",
   "keywords": [
     "Typescript",

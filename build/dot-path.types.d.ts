@@ -1,7 +1,7 @@
 type Primitive = null | undefined | string | number | boolean | symbol | bigint;
 type IsEqual<T1, T2> = T1 extends T2 ? (<G>() => G extends T1 ? 1 : 2) extends <G>() => G extends T2 ? 1 : 2 ? true : false : false;
 type isAnyEqual<T1, T2> = T1 extends T2 ? (IsEqual<T1, T2> extends true ? true : never) : never;
-type Join<TKey extends string, TValue, TOriginalValue> = TValue extends Primitive ? TKey : true extends isAnyEqual<TOriginalValue, TValue> ? TKey : TKey | `${TKey}.${PathImpl<TValue, TOriginalValue>}`;
+type Join<TKey extends string, TItem, TOriginalItem> = TItem extends Primitive ? TKey : true extends isAnyEqual<TOriginalItem, TItem> ? TKey : TKey | `${TKey}.${PathImpl<TItem, TOriginalItem>}`;
 type NumberKey = `${number}`;
 type PathArray<T extends readonly unknown[], TType> = Join<NumberKey, T[number], TType>;
 type IsTuple<T extends readonly unknown[]> = number extends T['length'] ? false : true;
@@ -16,13 +16,13 @@ type PathObjectPaths<T, TKeys extends ObjectKey<T>, TType> = {
     [K in TKeys]: Join<K extends string ? K : `${K}`, T[K], TType>;
 }[TKeys];
 type PathObject<T, TType> = PathObjectPaths<T, ObjectKey<T>, TType>;
-export type PathImpl<TValue, TOriginalValue = TValue> = TValue extends readonly unknown[] ? IsTuple<TValue> extends true ? PathTuple<TValue, TOriginalValue> : PathArray<TValue, TOriginalValue> : PathObject<TValue, TOriginalValue>;
+export type PathImpl<TItem, TOriginalItem = TItem> = TItem extends readonly unknown[] ? IsTuple<TItem> extends true ? PathTuple<TItem, TOriginalItem> : PathArray<TItem, TOriginalItem> : PathObject<TItem, TOriginalItem>;
 type SplitPath<TPath extends string> = TPath extends `${infer K}.${infer R}` ? [K, ...SplitPath<R>] : [TPath];
-type ResolvePathPart<TValue, TPart extends string> = TValue extends null | undefined ? NonNullable<TValue>[TPart] | undefined : TValue[Extract<TPart, keyof TValue>];
-type ResolvePathParts<TValue, TParts extends readonly string[]> = TParts extends [infer TPart extends string] ? ResolvePathPart<TValue, TPart> : TParts extends [infer TPart extends string, ...infer TRest extends readonly string[]] ? ResolvePathParts<ResolvePathPart<TValue, TPart>, TRest> : never;
-export type AtImpl<T, P extends PathImpl<T>> = ResolvePathParts<T, SplitPath<P>>;
-type OfImplPaths<TValue, TPaths extends PathImpl<TValue>, TExpectedType> = {
-    [K in TPaths]: AtImpl<TValue, K> extends TExpectedType ? K : never;
+type ResolvePathPart<TItem, TPart extends string> = TItem extends null | undefined ? NonNullable<TItem>[TPart] | undefined : TItem[Extract<TPart, keyof TItem>];
+type ResolvePathParts<TItem, TParts extends readonly string[]> = TParts extends [infer TPart extends string] ? ResolvePathPart<TItem, TPart> : TParts extends [infer TPart extends string, ...infer TRest extends readonly string[]] ? ResolvePathParts<ResolvePathPart<TItem, TPart>, TRest> : never;
+export type AtImpl<TItem, TPath extends PathImpl<TItem>> = ResolvePathParts<TItem, SplitPath<TPath>>;
+type OfImplPaths<TItem, TPaths extends PathImpl<TItem>, TExpectedType> = {
+    [K in TPaths]: AtImpl<TItem, K> extends TExpectedType ? K : never;
 }[TPaths];
-export type OfImpl<TValue, TExpectedType> = OfImplPaths<TValue, PathImpl<TValue>, TExpectedType>;
+export type OfImpl<TItem, TExpectedType> = OfImplPaths<TItem, PathImpl<TItem>, TExpectedType>;
 export {};

@@ -3,8 +3,9 @@ function get(e, t) {
 		let n = t.split("."), r = e;
 		for (let e = 0, t = n.length; e < t; ++e) r = r[n[e]];
 		return r;
-	} catch {
-		return;
+	} catch (e) {
+		if (e instanceof TypeError) return;
+		throw e;
 	}
 }
 function set(e, t, n) {
