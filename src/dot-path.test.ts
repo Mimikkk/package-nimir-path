@@ -164,4 +164,31 @@ describe('dot-path', () => {
       expect(result).toEqual({ a: { b: { c: 2 } } });
     });
   });
+
+  describe('error handling', () => {
+    it('should return undefined for access errors', () => {
+      const item: DeepPartial<Item> = {};
+
+      const value = get(item, 'a.b.c');
+
+      expectTypeOf(value).toEqualTypeOf<number | undefined>();
+      expect(value).toEqual(undefined);
+    });
+
+    it('should throw for other errors', () => {
+      const item = {
+        a: {
+          get b(): number {
+            throw new Error('test');
+          },
+        },
+      } as const;
+
+      expect(() => {
+        const value = get(item, 'a.b');
+
+        expectTypeOf(value).toEqualTypeOf<number>();
+      }).toThrow('test');
+    });
+  });
 });

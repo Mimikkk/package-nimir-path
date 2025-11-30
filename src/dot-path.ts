@@ -9,7 +9,7 @@ import type { AtImpl, OfImpl, PathImpl } from './dot-path.types.js';
  * type P = Path<T>;
  * >> "a" | "a.b" | "a.b.c" | "b"
  */
-export type Path<T> = PathImpl<T>;
+export type Path<TItem> = PathImpl<TItem>;
 
 /**
  * Type that represents the value type at a given path in an object.
@@ -22,7 +22,7 @@ export type Path<T> = PathImpl<T>;
  * Path.At<T, '1.a'>;
  * >> number
  */
-export type PathAt<TData, TPath extends Path<TData>> = AtImpl<TData, TPath>;
+export type PathAt<TItem, TPath extends Path<TItem>> = AtImpl<TItem, TPath>;
 
 /**
  * Type that represents all paths in an object that lead to a value of a given type.
@@ -34,7 +34,7 @@ export type PathAt<TData, TPath extends Path<TData>> = AtImpl<TData, TPath>;
  *
  * >> "a.b.c" | "b"
  */
-export type PathOf<TData, TExpectedType> = OfImpl<TData, TExpectedType>;
+export type PathOf<TItem, TExpectedType> = OfImpl<TItem, TExpectedType>;
 
 /**
  * Retrieves the value at the given path within an object.
@@ -50,10 +50,10 @@ export type PathOf<TData, TExpectedType> = OfImpl<TData, TExpectedType>;
  * Path.get(item, 'a.b.c');
  * >> 1
  */
-export function get<const TData, TPath extends Path<TData>>(
-  item: TData,
+export function get<const TItem, TPath extends Path<TItem>>(
+  item: TItem,
   path: TPath,
-): PathAt<NoInfer<TData>, NoInfer<TPath>> {
+): PathAt<NoInfer<TItem>, NoInfer<TPath>> {
   try {
     const segments = path.split('.');
 
@@ -62,8 +62,12 @@ export function get<const TData, TPath extends Path<TData>>(
       result = result[segments[i]];
     }
     return result;
-  } catch {
-    return undefined!;
+  } catch (error) {
+    if (error instanceof TypeError) {
+      return undefined!;
+    }
+
+    throw error;
   }
 }
 
@@ -85,11 +89,11 @@ export function get<const TData, TPath extends Path<TData>>(
  * Path.set(item, 'a.b.c', 2);
  * >> { a: { b: { c: 2 } } }
  */
-export function set<const TData, TPath extends Path<TData>>(
-  item: TData,
+export function set<const TItem, TPath extends Path<TItem>>(
+  item: TItem,
   path: TPath,
-  value: PathAt<NoInfer<TData>, NoInfer<TPath>>,
-): TData {
+  value: PathAt<NoInfer<TItem>, NoInfer<TPath>>,
+): TItem {
   const segments = path.split('.');
 
   let target = item as any;

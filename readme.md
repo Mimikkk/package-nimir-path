@@ -9,7 +9,7 @@
 
 Full thanks to [gmarkov](https://github.com/g-makarov) and his [dot-path-value](https://github.com/g-makarov/dot-path-value).
 
-This is a library allowing for performant extraction and setting of nested elements via a typesafe dot-path.
+This library allows for performant extraction and setting of nested elements via a typesafe dot-path.
 
 ## Install
 
@@ -109,7 +109,7 @@ get(item, 'a.b.c');
 get(item, 'a.b');
 // -> number
 get(item, 'himom!');
-// undefined
+// -> undefined
 
 set(item, 'a.b.c', 'himom!');
 // valid
@@ -140,7 +140,7 @@ get(tuple, '1.0.a.b.c');
 get(tuple, '1');
 // -> [first: Item, second: Item]
 get(tuple, 'himom!');
-// undefined
+// -> undefined
 
 set(tuple, '0', 'himom!');
 // valid
@@ -170,7 +170,7 @@ get(items, '0');
 get(items, '1.a.b.c');
 // -> string
 get(items, 'himom!');
-// undefined
+// -> undefined
 
 set(items, '0', { a: { b: { c: 'himom!' } }, b: 0xbeef });
 // valid
@@ -181,3 +181,11 @@ set(items, '1.a.b.c', 0xbeef);
 set(items, '1.a.b', { c: 'himom!' });
 // valid
 ```
+
+## Caveats
+
+- **Ergonomics first** - The library does not guard against users' type mistakes, performs no runtime checks, and swallows all access errors returning an undefined instead. Its meant for its utility value.
+- **Tuple Size Limitation** - Tuple path resolution is limited to 16 elements (indices 0-16). Tuples larger than this will not have proper type inference for indices beyond 16.
+- **Mutation Behavior** - The `set` function mutates the input object and returns the same reference. It does not create a deep copy.
+- **Object Creation** - When creating intermediate paths, `set` always creates plain objects `{}`. This can cause type mismatches if the expected structure contains arrays.
+- **No Prototype Pollution Protection** - The library does not guard against prototype pollution attacks. Avoid using untrusted input as paths.
