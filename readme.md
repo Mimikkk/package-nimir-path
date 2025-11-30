@@ -1,10 +1,19 @@
 # @nimir/dot-path - Typescript friendly object/tuple path resolve
 
 <a href="https://www.npmjs.com/package/@nimir/dot-path">
+  <img alt="minzipped size" src="https://flat.badgen.net/bundlephobia/minzip/@nimir/dot-path" />
+</a>
+<a href="https://www.npmjs.com/package/@nimir/dot-path">
   <img alt="npm version" src="https://img.shields.io/npm/v/@nimir/dot-path.svg?style=flat-square" />
 </a>
 <a href="https://www.npmjs.com/package/@nimir/dot-path">
   <img alt="npm downloads" src="https://img.shields.io/npm/dm/@nimir/dot-path.svg?style=flat-square" />
+</a>
+<a href="https://www.npmjs.com/package/@nimir/dot-path">
+  <img alt="dependency count" src="https://flat.badgen.net/bundlephobia/dependency-count/@nimir/dot-path" />
+</a>
+<a href="https://www.npmjs.com/package/@nimir/dot-path">
+  <img alt="treeshakable" src="https://flat.badgen.net/bundlephobia/tree-shaking/@nimir/dot-path" />
 </a>
 
 Full thanks to [gmarkov](https://github.com/g-makarov) and his [dot-path-value](https://github.com/g-makarov/dot-path-value).
