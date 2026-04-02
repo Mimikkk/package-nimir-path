@@ -9,7 +9,7 @@ import type { AtImpl, OfImpl, PathImpl } from "./dot-path.types.js";
  * type P = Path<T>;
  * >> "a" | "a.b" | "a.b.c" | "b"
  */
-export type Path<TItem> = PathImpl<NoInfer<TItem>>;
+export type Path<TItem> = PathImpl<TItem>;
 
 /**
  * Type that represents the value type at a given path in an object.
@@ -22,7 +22,7 @@ export type Path<TItem> = PathImpl<NoInfer<TItem>>;
  * Path.At<T, '1.a'>;
  * >> number
  */
-export type PathAt<TItem, TPath extends Path<NoInfer<TItem>>> = AtImpl<NoInfer<TItem>, NoInfer<TPath>>;
+export type PathAt<TItem, TPath extends Path<NoInfer<TItem>>> = AtImpl<TItem, TPath>;
 
 /**
  * Type that represents all paths in an object that lead to a value of a given type.
@@ -34,7 +34,7 @@ export type PathAt<TItem, TPath extends Path<NoInfer<TItem>>> = AtImpl<NoInfer<T
  *
  * >> "a.b.c" | "b"
  */
-export type PathOf<TItem, TExpectedType> = OfImpl<NoInfer<TItem>, NoInfer<TExpectedType>>;
+export type PathOf<TItem, TExpectedType> = OfImpl<TItem, TExpectedType>;
 
 /**
  * Retrieves the value at the given path within an object.
