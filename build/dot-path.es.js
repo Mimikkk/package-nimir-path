@@ -1,4 +1,5 @@
-function get(e, t) {
+//#region src/dot-path.ts
+function e(e, t) {
 	try {
 		let n = t.split("."), r = e;
 		for (let e = 0, t = n.length; e < t; ++e) r = r[n[e]];
@@ -8,7 +9,7 @@ function get(e, t) {
 		throw e;
 	}
 }
-function set(e, t, n) {
+function t(e, t, n) {
 	let r = t.split("."), i = e;
 	for (let e = 0, t = r.length - 1; e < t; ++e) {
 		let t = r[e];
@@ -16,4 +17,5 @@ function set(e, t, n) {
 	}
 	return i[r[r.length - 1]] = n, e;
 }
-export { get, set };
+//#endregion
+export { e as get, t as set };

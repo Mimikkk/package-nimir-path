@@ -56,7 +56,7 @@ bun install npm:@nimir/dot-path
 ### Usage of Path utilities
 
 ```ts
-import type { Path } from '@nimir/dot-path';
+import type { Path } from "@nimir/dot-path";
 type Item = {
   a: { b: { c: string } };
   b: number;
@@ -75,16 +75,16 @@ PathOf<Item, number | string>;
 PathOf<Item, { c: number }>;
 //   ^? "a.b"
 
-PathAt<Item, 'a.b.c'>;
+PathAt<Item, "a.b.c">;
 //   ^? string
 
-PathAt<Item, 'a.b'>;
+PathAt<Item, "a.b">;
 //   ^? { c: string }
 
-PathAt<Item, 'a.b.c.d'>;
+PathAt<Item, "a.b.c.d">;
 //   ^? never
 
-PathAt<Item, 'a.b.c' | 'a.b'>;
+PathAt<Item, "a.b.c" | "a.b">;
 //   ^? string | { c: string }
 
 type RecursiveItem = {
@@ -99,7 +99,7 @@ Path<RecursiveItem>;
 ### Usage with an object
 
 ```ts
-import { get, set } from '@nimir/dot-path';
+import { get, set } from "@nimir/dot-path";
 
 type Item = {
   a: { b: { c: string } };
@@ -108,30 +108,30 @@ type Item = {
 };
 
 const item: Item = {
-  a: { b: { c: 'hello' } },
+  a: { b: { c: "hello" } },
   b: 0xbeef,
-  c: 'world!',
+  c: "world!",
 };
 
-get(item, 'a.b.c');
+get(item, "a.b.c");
 // -> string
-get(item, 'a.b');
+get(item, "a.b");
 // -> number
-get(item, 'himom!');
+get(item, "himom!");
 // -> undefined
 
-set(item, 'a.b.c', 'himom!');
+set(item, "a.b.c", "himom!");
 // valid
-set(item, 'a.b.c', 0xbeef);
+set(item, "a.b.c", 0xbeef);
 // invalid
-set(item, 'a.b', { c: 'himom!' });
+set(item, "a.b", { c: "himom!" });
 // valid
 ```
 
 ### Usage with a tuple
 
 ```ts
-import { get, set } from '@nimir/dot-path';
+import { get, set } from "@nimir/dot-path";
 
 type Item = {
   a: { b: { c: string } };
@@ -140,31 +140,31 @@ type Item = {
 
 type Tuple = [string, [first: Item, second: Item]];
 
-const tuple: Tuple = ['hello', [item, item]];
+const tuple: Tuple = ["hello", [item, item]];
 
-get(tuple, '0');
+get(tuple, "0");
 // -> string
-get(tuple, '1.0.a.b.c');
+get(tuple, "1.0.a.b.c");
 // -> string
-get(tuple, '1');
+get(tuple, "1");
 // -> [first: Item, second: Item]
-get(tuple, 'himom!');
+get(tuple, "himom!");
 // -> undefined
 
-set(tuple, '0', 'himom!');
+set(tuple, "0", "himom!");
 // valid
-set(tuple, '1.0.a.b.c', 'himom!');
+set(tuple, "1.0.a.b.c", "himom!");
 // valid
-set(tuple, '1.0.a.b.c', 0xbeef);
+set(tuple, "1.0.a.b.c", 0xbeef);
 // invalid
-set(tuple, '1.0.a.b', { c: 'himom!' });
+set(tuple, "1.0.a.b", { c: "himom!" });
 // valid
 ```
 
 ### Usage with an array
 
 ```ts
-import { get, set } from '@nimir/dot-path';
+import { get, set } from "@nimir/dot-path";
 
 type Item = {
   a: { b: { c: string } };
@@ -174,20 +174,20 @@ type Item = {
 
 const items: Item[] = [item, item];
 
-get(items, '0');
+get(items, "0");
 // -> Item
-get(items, '1.a.b.c');
+get(items, "1.a.b.c");
 // -> string
-get(items, 'himom!');
+get(items, "himom!");
 // -> undefined
 
-set(items, '0', { a: { b: { c: 'himom!' } }, b: 0xbeef });
+set(items, "0", { a: { b: { c: "himom!" } }, b: 0xbeef });
 // valid
-set(items, '1.a.b.c', 'himom!');
+set(items, "1.a.b.c", "himom!");
 // valid
-set(items, '1.a.b.c', 0xbeef);
+set(items, "1.a.b.c", 0xbeef);
 // invalid
-set(items, '1.a.b', { c: 'himom!' });
+set(items, "1.a.b", { c: "himom!" });
 // valid
 ```
 

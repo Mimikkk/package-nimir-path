@@ -1,4 +1,5 @@
 node_modules
+.attest
 .idea
 .vscode
 .history

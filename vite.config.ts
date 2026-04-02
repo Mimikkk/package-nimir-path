@@ -1,20 +1,23 @@
-import { defineConfig } from 'rolldown-vite';
-import dts from 'vite-plugin-dts';
+import dts from "vite-plugin-dts";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   build: {
     emptyOutDir: true,
-    outDir: 'build',
+    outDir: "build",
     lib: {
-      entry: 'src/dot-path.ts',
-      name: 'dot-path',
-      fileName: format => `dot-path.${format}.js`,
-      formats: ['es', 'cjs', 'umd'],
+      entry: "src/dot-path.ts",
+      name: "dot-path",
+      fileName: (format) => `dot-path.${format}.js`,
+      formats: ["es", "cjs", "umd"],
     },
   },
   plugins: [
     dts({
-      tsconfigPath: 'tsconfig.library.json',
+      tsconfigPath: "tsconfig.library.json",
     }),
   ],
+  test: {
+    globalSetup: ["./attest.setup.ts"],
+  },
 });

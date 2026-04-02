@@ -1,4 +1,4 @@
-import type { AtImpl, OfImpl, PathImpl } from './dot-path.types.js';
+import type { AtImpl, OfImpl, PathImpl } from "./dot-path.types.js";
 
 /**
  * Type representing all possible paths in an object.
@@ -9,7 +9,7 @@ import type { AtImpl, OfImpl, PathImpl } from './dot-path.types.js';
  * type P = Path<T>;
  * >> "a" | "a.b" | "a.b.c" | "b"
  */
-export type Path<TItem> = PathImpl<TItem>;
+export type Path<TItem> = PathImpl<NoInfer<TItem>>;
 
 /**
  * Type that represents the value type at a given path in an object.
@@ -22,7 +22,7 @@ export type Path<TItem> = PathImpl<TItem>;
  * Path.At<T, '1.a'>;
  * >> number
  */
-export type PathAt<TItem, TPath extends Path<TItem>> = AtImpl<TItem, TPath>;
+export type PathAt<TItem, TPath extends Path<NoInfer<TItem>>> = AtImpl<NoInfer<TItem>, NoInfer<TPath>>;
 
 /**
  * Type that represents all paths in an object that lead to a value of a given type.
@@ -34,7 +34,7 @@ export type PathAt<TItem, TPath extends Path<TItem>> = AtImpl<TItem, TPath>;
  *
  * >> "a.b.c" | "b"
  */
-export type PathOf<TItem, TExpectedType> = OfImpl<TItem, TExpectedType>;
+export type PathOf<TItem, TExpectedType> = OfImpl<NoInfer<TItem>, NoInfer<TExpectedType>>;
 
 /**
  * Retrieves the value at the given path within an object.
@@ -50,12 +50,12 @@ export type PathOf<TItem, TExpectedType> = OfImpl<TItem, TExpectedType>;
  * Path.get(item, 'a.b.c');
  * >> 1
  */
-export function get<const TItem, TPath extends Path<TItem>>(
+export function get<TItem, TPath extends Path<TItem>>(
   item: TItem,
   path: TPath,
 ): PathAt<NoInfer<TItem>, NoInfer<TPath>> {
   try {
-    const segments = path.split('.');
+    const segments = path.split(".");
 
     let result = item as never;
     for (let i = 0, it = segments.length; i < it; ++i) {
@@ -89,20 +89,17 @@ export function get<const TItem, TPath extends Path<TItem>>(
  * Path.set(item, 'a.b.c', 2);
  * >> { a: { b: { c: 2 } } }
  */
-export function set<const TItem, TPath extends Path<TItem>>(
-  item: TItem,
-  path: TPath,
-  value: PathAt<NoInfer<TItem>, NoInfer<TPath>>,
-): TItem {
-  const segments = path.split('.');
+export function set<TItem, TPath extends Path<TItem>>(item: TItem, path: TPath, value: PathAt<TItem, TPath>): TItem {
+  const segments = path.split(".");
 
-  let target = item as any;
+  type Target = { [key: string]: Target | typeof value };
+  let target = item as Target;
   for (let i = 0, it = segments.length - 1; i < it; ++i) {
     const key = segments[i];
 
     if (!(key in target)) target[key] = {};
 
-    target = target[key];
+    target = target[key] as Target;
   }
 
   target[segments[segments.length - 1]] = value;

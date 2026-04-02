@@ -1,6 +1,6 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "baseUrl": ".",
     "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
@@ -10,8 +10,9 @@
     "strictNullChecks": true,
     "moduleResolution": "bundler",
     "outDir": "build",
+    "rootDir": "src",
     "lib": ["DOM", "ESNext"],
-    "types": ["rolldown-vite/client"]
+    "types": ["vite/client"]
   },
   "include": ["src", "readme.md"],
   "references": [{ "path": "./tsconfig.vite.json" }]

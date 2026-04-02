@@ -1,41 +1,33 @@
 {
+  "$schema": "https://json.schemastore.org/package",
   "name": "@nimir/dot-path",
   "version": "3.0.1",
   "description": "Dot path resolver for typescript",
   "keywords": [
     "Typescript",
-    "dottedpath",
-    "dotpath",
-    "vite",
-    "vitest",
-    "dot syntax",
-    "get",
-    "set",
-    "deep",
-    "nesting",
-    "update",
     "change",
-    "typesafe"
+    "deep",
+    "dot syntax",
+    "dotpath",
+    "dottedpath",
+    "get",
+    "nesting",
+    "set",
+    "typesafe",
+    "update",
+    "vite",
+    "vitest"
   ],
   "homepage": "https://www.github.com/Mimikkk/dot-path",
   "bugs": {
     "url": "https://github.com/Mimikkk/dot-path/issues"
   },
+  "license": "MIT",
+  "author": "Daniel Zdancewicz <zdancewicz.daniel@gmail.com>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Mimikkk/dot-path.git"
   },
-  "license": "MIT",
-  "author": "Daniel Zdancewicz <zdancewicz.daniel@gmail.com>",
-  "type": "module",
-  "exports": {
-    "types": "./build/dot-path.d.ts",
-    "require": "./build/dot-path.cjs.js",
-    "default": "./build/dot-path.es.js"
-  },
-  "main": "./build/dot-path.cjs.js",
-  "unpkg": "./build/dot-path.umd.js",
-  "module": "./build/dot-path.es.js",
   "source": "./src/dot-path.ts",
   "files": [
     "build",
@@ -44,16 +36,27 @@
     "tsconfig.vite.json",
     "vite.config.ts"
   ],
+  "type": "module",
+  "main": "./build/dot-path.cjs.js",
+  "module": "./build/dot-path.es.js",
+  "unpkg": "./build/dot-path.umd.js",
+  "exports": {
+    "types": "./build/dot-path.d.ts",
+    "require": "./build/dot-path.cjs.js",
+    "default": "./build/dot-path.es.js"
+  },
   "scripts": {
     "build": "vite build",
-    "test": "vitest test",
+    "test": "vitest run",
     "bench": "vitest bench"
   },
   "devDependencies": {
+    "@ark/attest": "^0.56.0",
+    "oxfmt": "^0.43.0",
+    "oxlint": "^1.58.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3",
     "vite-plugin-dts": "^4.5.4",
-    "prettier": "^3.7.3",
-    "typescript": "^5.9.3",
-    "rolldown-vite": "^7.2.8",
-    "vitest": "^4.0.14"
+    "vitest": "^4.1.2"
   }
 }

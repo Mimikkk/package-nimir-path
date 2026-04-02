@@ -8,7 +8,7 @@ import { AtImpl, OfImpl, PathImpl } from './dot-path.types.js';
  * type P = Path<T>;
  * >> "a" | "a.b" | "a.b.c" | "b"
  */
-export type Path<TItem> = PathImpl<TItem>;
+export type Path<TItem> = PathImpl<NoInfer<TItem>>;
 /**
  * Type that represents the value type at a given path in an object.
  *
@@ -20,7 +20,7 @@ export type Path<TItem> = PathImpl<TItem>;
  * Path.At<T, '1.a'>;
  * >> number
  */
-export type PathAt<TItem, TPath extends Path<TItem>> = AtImpl<TItem, TPath>;
+export type PathAt<TItem, TPath extends Path<NoInfer<TItem>>> = AtImpl<NoInfer<TItem>, NoInfer<TPath>>;
 /**
  * Type that represents all paths in an object that lead to a value of a given type.
  *
@@ -31,7 +31,7 @@ export type PathAt<TItem, TPath extends Path<TItem>> = AtImpl<TItem, TPath>;
  *
  * >> "a.b.c" | "b"
  */
-export type PathOf<TItem, TExpectedType> = OfImpl<TItem, TExpectedType>;
+export type PathOf<TItem, TExpectedType> = OfImpl<NoInfer<TItem>, NoInfer<TExpectedType>>;
 /**
  * Retrieves the value at the given path within an object.
  *
@@ -46,7 +46,7 @@ export type PathOf<TItem, TExpectedType> = OfImpl<TItem, TExpectedType>;
  * Path.get(item, 'a.b.c');
  * >> 1
  */
-export declare function get<const TItem, TPath extends Path<TItem>>(item: TItem, path: TPath): PathAt<NoInfer<TItem>, NoInfer<TPath>>;
+export declare function get<TItem, TPath extends Path<TItem>>(item: TItem, path: TPath): PathAt<NoInfer<TItem>, NoInfer<TPath>>;
 /**
  * Sets the value at the given path within an object.
  *
@@ -65,4 +65,4 @@ export declare function get<const TItem, TPath extends Path<TItem>>(item: TItem,
  * Path.set(item, 'a.b.c', 2);
  * >> { a: { b: { c: 2 } } }
  */
-export declare function set<const TItem, TPath extends Path<TItem>>(item: TItem, path: TPath, value: PathAt<NoInfer<TItem>, NoInfer<TPath>>): TItem;
+export declare function set<TItem, TPath extends Path<TItem>>(item: TItem, path: TPath, value: PathAt<TItem, TPath>): TItem;

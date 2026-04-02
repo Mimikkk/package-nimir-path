@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": ["build", "node_modules"],
+  "arrowParens": "always",
+  "trailingComma": "all",
+  "printWidth": 120,
+  "tabWidth": 2,
+  "endOfLine": "lf",
+  "insertFinalNewline": true,
+  "embeddedLanguageFormatting": "auto"
+}
