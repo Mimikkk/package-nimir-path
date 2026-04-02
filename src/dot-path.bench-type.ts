@@ -329,27 +329,37 @@ bench("warm-up", () => {}).types([0, "instantiations"]);
 bench("Path", () => {
   type Test = Path<MegaOrg>;
   let _: Test;
-}).types([3609, "instantiations"]);
+})
+  .mark({ mean: [0.19, "ns"], median: [0, "s"] })
+  .types([5699, "instantiations"]);
 
 bench("PathAt", () => {
   type Test = PathAt<MegaOrg, "departments.0.lead.contact">;
   let _: Test;
-}).types([4325, "instantiations"]);
+})
+  .mark({ mean: [2, "ns"], median: [1.8, "ns"] })
+  .types([7256, "instantiations"]);
 
 bench("PathOf", () => {
   type Test = PathOf<MegaOrg, number>;
   let _: Test;
-}).types([4445, "instantiations"]);
+})
+  .mark({ mean: [1.99, "ns"], median: [1.8, "ns"] })
+  .types([51493, "instantiations"]);
 
 bench("get", () => {
   let item!: MegaOrg;
   get(item, "departments.0.lead.contact");
-}).types([4528, "instantiations"]);
+})
+  .mark({ mean: [13.22, "us"], median: [13.13, "us"] })
+  .types([7365, "instantiations"]);
 
 bench("set", () => {
-  let item!: MegaOrg;
+  let item: MegaOrg = {} as never;
   set(item, "departments.0.lead.contact", {
     email: "test@test.com",
     slack: "@test",
   });
-}).types([5978, "instantiations"]);
+})
+  .mark({ mean: [170.96, "ns"], median: [162.5, "ns"] })
+  .types([7582, "instantiations"]);
