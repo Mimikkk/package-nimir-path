@@ -1,4 +1,12 @@
 import { bench } from "@ark/attest";
+import {
+  Path as DpvPath,
+  PathValue as DpvPathValue,
+  getByPath,
+  setByPath,
+} from "dot-path-value";
+import { getProperty, setProperty } from "dot-prop";
+import type { Get, Paths } from "type-fest";
 import { get, Path, PathAt, PathOf, set } from "./dot-path.js";
 
 interface Contact {
@@ -326,40 +334,114 @@ export interface DeepTranslations {
 
 bench("warm-up", () => {}).types([0, "instantiations"]);
 
+/**
+ * `dot-path-value` `Path` / `PathValue` recurse with no root guard; `EngDept.org: MegaOrg`
+ * makes `DpvPath<MegaOrg>` non-terminating. Same subtree under `departments` without that edge.
+ */
+type EngDeptAcyclic = Omit<EngDept, "org"> & { org: Pick<MegaOrg, "id"> };
+type MegaOrgAcyclic = Omit<MegaOrg, "departments"> & {
+  departments: [EngDeptAcyclic, SalesDept];
+};
+
 bench("Path", () => {
-  type Test = Path<MegaOrg>;
+  type Test = Path<MegaOrgAcyclic>;
   let _: Test;
 })
   .mark({ mean: [0.19, "ns"], median: [0, "s"] })
-  .types([5699, "instantiations"]);
+  .types([3885, "instantiations"]);
 
 bench("PathAt", () => {
-  type Test = PathAt<MegaOrg, "departments.0.lead.contact">;
+  type Test = PathAt<MegaOrgAcyclic, "departments.0.lead.contact">;
   let _: Test;
 })
-  .mark({ mean: [2, "ns"], median: [1.8, "ns"] })
-  .types([7256, "instantiations"]);
+  .mark({ mean: [1.88, "ns"], median: [1.8, "ns"] })
+  .types([4601, "instantiations"]);
 
 bench("PathOf", () => {
-  type Test = PathOf<MegaOrg, number>;
+  type Test = PathOf<MegaOrgAcyclic, number>;
   let _: Test;
 })
-  .mark({ mean: [1.99, "ns"], median: [1.8, "ns"] })
-  .types([51493, "instantiations"]);
+  .mark({ mean: [1.91, "ns"], median: [1.8, "ns"] })
+  .types([4728, "instantiations"]);
 
 bench("get", () => {
-  let item!: MegaOrg;
+  let item!: MegaOrgAcyclic;
   get(item, "departments.0.lead.contact");
 })
-  .mark({ mean: [13.22, "us"], median: [13.13, "us"] })
-  .types([7365, "instantiations"]);
+  .mark({ mean: [29.02, "ns"], median: [28.4, "ns"] })
+  .types([4804, "instantiations"]);
 
 bench("set", () => {
-  let item: MegaOrg = {} as never;
+  let item: MegaOrgAcyclic = {} as never;
   set(item, "departments.0.lead.contact", {
     email: "test@test.com",
     slack: "@test",
   });
 })
-  .mark({ mean: [170.96, "ns"], median: [162.5, "ns"] })
-  .types([7582, "instantiations"]);
+  .mark({ mean: [174.36, "ns"], median: [170.1, "ns"] })
+  .types([6254, "instantiations"]);
+
+bench("dpv Path", () => {
+  type Test = DpvPath<MegaOrgAcyclic>;
+  let _: Test;
+})
+  .mark({ mean: [1.92, "ns"], median: [1.8, "ns"] })
+  .types([4066, "instantiations"]);
+
+bench("dpv PathValue", () => {
+  type Test = DpvPathValue<MegaOrgAcyclic, "departments.0.lead.contact">;
+  let _: Test;
+})
+  .mark({ mean: [1.93, "ns"], median: [1.8, "ns"] })
+  .types([12706, "instantiations"]);
+
+bench("dpv get", () => {
+  let item!: MegaOrgAcyclic;
+  getByPath(item, "departments.0.lead.contact");
+})
+  .mark({ mean: [24.53, "ns"], median: [23.9, "ns"] })
+  .types([4447, "instantiations"]);
+
+bench("dpv set", () => {
+  let item: MegaOrgAcyclic = {} as never;
+  setByPath(item, "departments.0.lead.contact", {
+    email: "test@test.com",
+    slack: "@test",
+  });
+})
+  .mark({ mean: [173.69, "ns"], median: [169.8, "ns"] })
+  .types([4651, "instantiations"]);
+
+bench("dp Paths", () => {
+  type Test = Paths<
+    MegaOrgAcyclic,
+    { bracketNotation: false; maxRecursionDepth: 10 }
+  >;
+  let _: Test;
+})
+  .mark({ mean: [1.93, "ns"], median: [1.8, "ns"] })
+  .types([46603, "instantiations"]);
+
+bench("dp Get", () => {
+  type Test = Get<MegaOrgAcyclic, "departments.0.lead.contact">;
+  let _: Test;
+})
+  .mark({ mean: [1.9, "ns"], median: [1.8, "ns"] })
+  .types([36269, "instantiations"]);
+
+bench("dp get", () => {
+  let item!: MegaOrgAcyclic;
+  getProperty(item, "departments.0.lead.contact");
+})
+  .mark({ mean: [2.15, "ns"], median: [2, "ns"] })
+  .types([23075, "instantiations"]);
+
+bench("dp set", () => {
+  let item: MegaOrgAcyclic = {} as never;
+  setProperty(item, "departments.0.lead.contact", {
+    email: "test@test.com",
+    slack: "@test",
+  });
+})
+  .mark({ mean: [447.85, "ns"], median: [432.4, "ns"] })
+  .types([10, "instantiations"]);

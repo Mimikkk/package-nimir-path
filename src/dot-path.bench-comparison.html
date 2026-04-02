@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dot-path type bench — @nimir/dot-path vs dpv vs dot-prop</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fff5f7;
+        --card: #ffffff;
+        --ink: #2d1b2e;
+        --muted: #7a6578;
+        --nimir: #e84a7f;
+        --nimir-soft: rgba(232, 74, 127, 0.22);
+        --dpv: #7c6cf0;
+        --dpv-soft: rgba(124, 108, 240, 0.22);
+        --dp: #1ec8b0;
+        --dp-soft: rgba(30, 200, 176, 0.2);
+        --radius: 18px;
+        --shadow: 0 12px 40px rgba(45, 27, 46, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "DM Sans", system-ui, sans-serif;
+        background: radial-gradient(1200px 600px at 10% -10%, #ffe0ea 0%, transparent 55%),
+          radial-gradient(900px 500px at 100% 20%, #e4f8ff 0%, transparent 50%),
+          var(--bg);
+        color: var(--ink);
+        padding: 2rem 1.25rem 3rem;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 1.75rem;
+      }
+      h1 {
+        font-size: clamp(1.35rem, 4vw, 1.85rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin: 0 0 0.35rem;
+      }
+      .lede {
+        color: var(--muted);
+        font-size: 0.95rem;
+        max-width: 36em;
+        margin: 0 auto;
+        line-height: 1.45;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem 1.1rem;
+        justify-content: center;
+        margin: 1.1rem 0 0;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.25rem 1.35rem 1.5rem;
+        margin-bottom: 1.25rem;
+      }
+      .card h2 {
+        font-size: 1.05rem;
+        margin: 0 0 0.25rem;
+        font-weight: 700;
+      }
+      .card p.sub {
+        margin: 0 0 1rem;
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+      .chart-box {
+        position: relative;
+        height: 340px;
+      }
+      .chart-box.short {
+        height: 260px;
+      }
+      .chart-box.runtime {
+        height: 220px;
+      }
+      canvas {
+        user-select: none;
+      }
+      footer {
+        text-align: center;
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 0.5rem;
+        line-height: 1.5;
+      }
+      footer code {
+        font-size: 0.85em;
+        background: var(--nimir-soft);
+        padding: 0.1em 0.35em;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>TypeScript path utilities — a tiny bake-off</h1>
+        <p class="lede">
+          Numbers baked from <code style="background: var(--nimir-soft); padding: 0.15em 0.4em; border-radius: 6px"
+            >mark()</code
+          >
+          (mean · median) and <code style="background: var(--dpv-soft); padding: 0.15em 0.4em; border-radius: 6px"
+            >types()</code
+          >
+          on the same <code style="background: var(--dp-soft); padding: 0.15em 0.4em; border-radius: 6px"
+            >MegaOrgAcyclic</code
+          >
+          fixture. Two <strong>linear</strong> mean-time charts: type-shape work vs runtime call sites
+          (all timings in nanoseconds).
+        </p>
+        <div class="legend">
+          <span><i class="dot" style="background: var(--nimir)"></i> @nimir/dot-path</span>
+          <span><i class="dot" style="background: var(--dpv)"></i> dot-path-value</span>
+          <span><i class="dot" style="background: var(--dp)"></i> dot-prop + type-fest</span>
+        </div>
+      </header>
+
+      <div class="card">
+        <h2>Mean time — type-level benches (linear, ns)</h2>
+        <p class="sub">
+          <code>Path</code>, <code>PathAt</code>, <code>PathOf</code>, <code>dpv Path</code>,
+          <code>dpv PathValue</code>, <code>dp Paths</code>, <code>dp Get</code>. Axis max 2.5&nbsp;ns so sub-nanosecond
+          bars stay visible.
+        </p>
+        <div class="chart-box short">
+          <canvas id="chartMeanType"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Mean time — runtime call sites (linear, ns)</h2>
+        <p class="sub">
+          Axis max ~480&nbsp;ns (dominated by <code>dp set</code>). <code>dp get</code> (~2&nbsp;ns) stays a thin bar;
+          hover tooltips show exact means.
+        </p>
+        <div class="chart-box runtime">
+          <canvas id="chartMeanRuntime"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Type instantiations (linear)</h2>
+        <p class="sub">
+          Reported by @ark/attest <code>types([n, &quot;instantiations&quot;])</code> — linear axis 0–50k so mid-range
+          bars are not crushed at one end.
+        </p>
+        <div class="chart-box">
+          <canvas id="chartInst"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Figures for copy-paste</h2>
+        <p class="sub">Median units follow the bench file (Path uses <code>0 s</code> in <code>mark()</code> as recorded).</p>
+        <div style="overflow-x: auto">
+          <table
+            style="width: 100%; border-collapse: collapse; font-size: 0.8rem"
+          >
+            <thead>
+              <tr style="text-align: left; border-bottom: 2px solid #f0e6ea">
+                <th style="padding: 0.45rem 0.5rem">Benchmark</th>
+                <th style="padding: 0.45rem 0.5rem">Mean (<code>mark</code>)</th>
+                <th style="padding: 0.45rem 0.5rem">Median (<code>mark</code>)</th>
+                <th style="padding: 0.45rem 0.5rem"><code>types()</code></th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <footer>
+        Source rows:
+        <code>src/dot-path.bench-type.ts</code>
+        · Open this file in a browser (file:// or static host). Chart.js loads from jsDelivr.
+      </footer>
+    </div>
+
+    <script>
+      /** Sync with bench file mark() mean/median & types() — update when baselines change */
+      const rows = [
+        { key: "Path", family: "nimir", meanStr: "0.19 ns", medianStr: "0 s", inst: 3885 },
+        { key: "PathAt", family: "nimir", meanStr: "1.88 ns", medianStr: "1.8 ns", inst: 4601 },
+        { key: "PathOf", family: "nimir", meanStr: "1.91 ns", medianStr: "1.8 ns", inst: 4728 },
+        { key: "get", family: "nimir", meanStr: "29.02 ns", medianStr: "28.4 ns", inst: 4804 },
+        { key: "set", family: "nimir", meanStr: "174.36 ns", medianStr: "170.1 ns", inst: 6254 },
+        { key: "dpv Path", family: "dpv", meanStr: "1.92 ns", medianStr: "1.8 ns", inst: 4066 },
+        { key: "dpv PathValue", family: "dpv", meanStr: "1.93 ns", medianStr: "1.8 ns", inst: 12706 },
+        { key: "dpv get", family: "dpv", meanStr: "24.53 ns", medianStr: "23.9 ns", inst: 4447 },
+        { key: "dpv set", family: "dpv", meanStr: "173.69 ns", medianStr: "169.8 ns", inst: 4651 },
+        { key: "dp Paths", family: "dp", meanStr: "1.93 ns", medianStr: "1.8 ns", inst: 46603 },
+        { key: "dp Get", family: "dp", meanStr: "1.9 ns", medianStr: "1.8 ns", inst: 36269 },
+        { key: "dp get", family: "dp", meanStr: "2.15 ns", medianStr: "2 ns", inst: 23075 },
+        { key: "dp set", family: "dp", meanStr: "447.85 ns", medianStr: "432.4 ns", inst: 10 },
+      ];
+
+      const meanNsNumeric = {
+        Path: 0.19,
+        PathAt: 1.88,
+        PathOf: 1.91,
+        get: 29.02,
+        set: 174.36,
+        "dpv Path": 1.92,
+        "dpv PathValue": 1.93,
+        "dpv get": 24.53,
+        "dpv set": 173.69,
+        "dp Paths": 1.93,
+        "dp Get": 1.9,
+        "dp get": 2.15,
+        "dp set": 447.85,
+      };
+
+      const colors = {
+        nimir: "#e84a7f",
+        dpv: "#7c6cf0",
+        dp: "#1ec8b0",
+      };
+
+      Chart.defaults.font.family = "'DM Sans', system-ui, sans-serif";
+      Chart.defaults.color = "#2d1b2e";
+
+      /** Same bench order as table; split only for sane linear scales */
+      const meanTypeKeys = [
+        "Path",
+        "PathAt",
+        "PathOf",
+        "dpv Path",
+        "dpv PathValue",
+        "dp Paths",
+        "dp Get",
+      ];
+      const meanRuntimeKeys = ["get", "set", "dpv get", "dpv set", "dp get", "dp set"];
+
+      function rowSubset(keys) {
+        return keys.map((k) => rows.find((r) => r.key === k));
+      }
+
+      function meanChartOptions(xMax, title) {
+        return {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label(ctx) {
+                  const v = ctx.raw;
+                  const u = v >= 1000 ? `${(v / 1000).toFixed(2)} µs` : `${Number(v.toFixed(v < 1 ? 2 : 1))} ns`;
+                  return `Mean: ${u}`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              type: "linear",
+              min: 0,
+              max: xMax,
+              title: { display: true, text: title },
+              grid: { color: "rgba(45,27,46,0.08)", drawTicks: true },
+              ticks: {
+                maxTicksLimit: 12,
+                callback(v) {
+                  if (v >= 1000) return `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k`;
+                  return v;
+                },
+              },
+            },
+            y: {
+              grid: { display: false },
+              ticks: { font: { size: 11 } },
+            },
+          },
+        };
+      }
+
+      const tbody = document.getElementById("tableBody");
+      for (const r of rows) {
+        const tr = document.createElement("tr");
+        tr.style.borderBottom = "1px solid #f5eef2";
+        const c = colors[r.family];
+        tr.innerHTML = `<td style="padding:0.4rem 0.5rem;font-weight:600"><span style="color:${c}">●</span> ${r.key}</td><td style="padding:0.4rem 0.5rem">${r.meanStr}</td><td style="padding:0.4rem 0.5rem">${r.medianStr}</td><td style="padding:0.4rem 0.5rem">${r.inst.toLocaleString()}</td>`;
+        tbody.appendChild(tr);
+      }
+
+      const typeRows = rowSubset(meanTypeKeys);
+      new Chart(document.getElementById("chartMeanType"), {
+        type: "bar",
+        data: {
+          labels: typeRows.map((r) => r.key),
+          datasets: [
+            {
+              label: "Mean (ns)",
+              data: typeRows.map((r) => meanNsNumeric[r.key]),
+              backgroundColor: typeRows.map((r) => colors[r.family]),
+              borderRadius: 8,
+              borderSkipped: false,
+              barPercentage: 0.85,
+            },
+          ],
+        },
+        options: meanChartOptions(2.5, "Nanoseconds"),
+      });
+
+      const rtRows = rowSubset(meanRuntimeKeys);
+      new Chart(document.getElementById("chartMeanRuntime"), {
+        type: "bar",
+        data: {
+          labels: rtRows.map((r) => r.key),
+          datasets: [
+            {
+              label: "Mean (ns)",
+              data: rtRows.map((r) => meanNsNumeric[r.key]),
+              backgroundColor: rtRows.map((r) => colors[r.family]),
+              borderRadius: 8,
+              borderSkipped: false,
+              barPercentage: 0.88,
+            },
+          ],
+        },
+        options: meanChartOptions(480, "Nanoseconds"),
+      });
+
+      new Chart(document.getElementById("chartInst"), {
+        type: "bar",
+        data: {
+          labels: rows.map((r) => r.key),
+          datasets: [
+            {
+              label: "Instantiations",
+              data: rows.map((r) => r.inst),
+              backgroundColor: rows.map((r) => colors[r.family]),
+              borderRadius: 6,
+              borderSkipped: false,
+              barPercentage: 0.9,
+            },
+          ],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label(ctx) {
+                  return `${ctx.raw.toLocaleString()} instantiations`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              type: "linear",
+              min: 0,
+              max: 50_000,
+              title: { display: true, text: "Instantiations" },
+              grid: { color: "rgba(45,27,46,0.08)" },
+              ticks: {
+                stepSize: 5000,
+                callback(v) {
+                  return Number(v).toLocaleString();
+                },
+              },
+            },
+            y: {
+              grid: { display: false },
+              ticks: { font: { size: 11 } },
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

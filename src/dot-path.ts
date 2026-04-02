@@ -51,21 +51,7 @@ export type PathOf<TItem, TExpectedType> = OfImpl<TItem, TExpectedType>;
  * >> 1
  */
 export function get<TItem, TPath extends Path<TItem>>(item: TItem, path: TPath): PathAt<TItem, TPath> {
-  try {
-    const segments = path.split(".");
-
-    let result = item as never;
-    for (let i = 0, it = segments.length; i < it; ++i) {
-      result = result[segments[i]];
-    }
-    return result;
-  } catch (error) {
-    if (error instanceof TypeError) {
-      return undefined!;
-    }
-
-    throw error;
-  }
+  return path.split(".").reduce((acc, key) => (acc as never)?.[key], item) as PathAt<TItem, TPath>;
 }
 
 /**

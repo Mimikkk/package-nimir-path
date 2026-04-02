@@ -11,12 +11,21 @@ importers:
       '@ark/attest':
         specifier: ^0.56.0
         version: 0.56.0(typescript@6.0.2)
+      dot-path-value:
+        specifier: ^0.0.11
+        version: 0.0.11
+      dot-prop:
+        specifier: ^10.1.0
+        version: 10.1.0
       oxfmt:
         specifier: ^0.43.0
         version: 0.43.0
       oxlint:
         specifier: ^1.58.0
         version: 1.58.0
+      type-fest:
+        specifier: 5.5.0
+        version: 5.5.0
       typescript:
         specifier: ^6.0.2
         version: 6.0.2
@@ -812,6 +821,13 @@ packages:
     resolution: {integrity: sha512-sSuxWU5j5SR9QQji/o2qMvqRNYRDOcBTgsJ/DeCf4iSN4gW+gNMXM7wFIP+fdXZxoNiAnHUTGjCr+TSWXdRDKg==}
     engines: {node: '>=0.3.1'}
 
+  dot-path-value@0.0.11:
+    resolution: {integrity: sha512-b50GgITocbLSGMwfHrSLHToA/voYHRhPqHmMIVwDVyNJVAi9+MkL0pG3y7LD3PNlSE5XDlHs6sSWJb+ny+PyAQ==}
+
+  dot-prop@10.1.0:
+    resolution: {integrity: sha512-MVUtAugQMOff5RnBy2d9N31iG0lNwg1qAoAOn7pOK5wf94WIaE3My2p3uwTQuvS2AcqchkcR3bHByjaM0mmi7Q==}
+    engines: {node: '>=20'}
+
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
 
@@ -1188,6 +1204,10 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
+  tagged-tag@1.0.0:
+    resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
+    engines: {node: '>=20'}
+
   through2@4.0.2:
     resolution: {integrity: sha512-iOqSav00cVxEEICeD7TjLB1sueEL+81Wpzp2bY17uZjZN0pWZPuo4suZ/61VujxmqSGFfgOcNuTZ85QJwNZQpw==}
 
@@ -1216,6 +1236,10 @@ packages:
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  type-fest@5.5.0:
+    resolution: {integrity: sha512-PlBfpQwiUvGViBNX84Yxwjsdhd1TUlXr6zjX7eoirtCPIr08NAmxwa+fcYBTeRQxHo9YC9wwF3m9i700sHma8g==}
+    engines: {node: '>=20'}
 
   typescript@5.8.2:
     resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
@@ -1961,6 +1985,12 @@ snapshots:
 
   diff@8.0.2: {}
 
+  dot-path-value@0.0.11: {}
+
+  dot-prop@10.1.0:
+    dependencies:
+      type-fest: 5.5.0
+
   emoji-regex@8.0.0: {}
 
   entities@4.5.0: {}
@@ -2334,6 +2364,8 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
+  tagged-tag@1.0.0: {}
+
   through2@4.0.2:
     dependencies:
       readable-stream: 3.6.2
@@ -2355,6 +2387,10 @@ snapshots:
 
   tslib@2.8.1:
     optional: true
+
+  type-fest@5.5.0:
+    dependencies:
+      tagged-tag: 1.0.0
 
   typescript@5.8.2: {}
 
