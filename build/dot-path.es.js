@@ -1,13 +1,6 @@
 //#region src/dot-path.ts
 function e(e, t) {
-	try {
-		let n = t.split("."), r = e;
-		for (let e = 0, t = n.length; e < t; ++e) r = r[n[e]];
-		return r;
-	} catch (e) {
-		if (e instanceof TypeError) return;
-		throw e;
-	}
+	return t.split(".").reduce((e, t) => e?.[t], e);
 }
 function t(e, t, n) {
 	let r = t.split("."), i = e;
