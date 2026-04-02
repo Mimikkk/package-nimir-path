@@ -1,5 +1,5 @@
 import { bench } from "@ark/attest";
-import { Path, PathAt, PathOf } from "./dot-path.js";
+import { get, Path, PathAt, PathOf, set } from "./dot-path.js";
 
 interface Contact {
   email: string;
@@ -14,6 +14,7 @@ interface Lead {
 interface EngDept {
   name: "eng";
   lead: Lead;
+  org: MegaOrg;
 }
 
 interface SalesDept {
@@ -328,14 +329,27 @@ bench("warm-up", () => {}).types([0, "instantiations"]);
 bench("Path", () => {
   type Test = Path<MegaOrg>;
   let _: Test;
-}).types([4687, "instantiations"]);
+}).types([3609, "instantiations"]);
 
 bench("PathAt", () => {
   type Test = PathAt<MegaOrg, "departments.0.lead.contact">;
   let _: Test;
-}).types([5880, "instantiations"]);
+}).types([4325, "instantiations"]);
 
 bench("PathOf", () => {
   type Test = PathOf<MegaOrg, number>;
   let _: Test;
-}).types([6117, "instantiations"]);
+}).types([4445, "instantiations"]);
+
+bench("get", () => {
+  let item!: MegaOrg;
+  get(item, "departments.0.lead.contact");
+}).types([4528, "instantiations"]);
+
+bench("set", () => {
+  let item!: MegaOrg;
+  set(item, "departments.0.lead.contact", {
+    email: "test@test.com",
+    slack: "@test",
+  });
+}).types([5978, "instantiations"]);

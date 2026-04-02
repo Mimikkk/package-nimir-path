@@ -105,6 +105,7 @@ describe("dot-path", () => {
       interface Contact {
         email: string;
         slack?: string;
+        org: MegaOrg;
       }
 
       interface Lead {
@@ -190,7 +191,7 @@ describe("dot-path", () => {
       });
 
       it("get/set round-trip deep paths", () => {
-        const contact: Contact = { email: "lead@x.test", slack: "@lead" };
+        const contact: Contact = { email: "lead@x.test", slack: "@lead", org: {} as MegaOrg };
         const mega: MegaOrg = {
           id: "org-1",
           meta: {
@@ -227,6 +228,9 @@ describe("dot-path", () => {
         };
         const next = set(editable, "departments.1.quota.carry.amount", 99);
         attest(next satisfies MegaOrg);
+        expect(get(next, "departments.1.quota.carry.amount")).toEqual(99);
+        expect(get(next, "departments.1.quota.carry.from")).toEqual("fy23");
+        expect(get(next, "departments.1.quota.carry.amount")).toEqual(99);
         expect(get(next, "departments.1.quota.carry.amount")).toEqual(99);
       });
     });

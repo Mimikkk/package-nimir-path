@@ -22,7 +22,7 @@ export type Path<TItem> = PathImpl<TItem>;
  * Path.At<T, '1.a'>;
  * >> number
  */
-export type PathAt<TItem, TPath extends Path<NoInfer<TItem>>> = AtImpl<TItem, TPath>;
+export type PathAt<TItem, TPath extends Path<TItem>> = AtImpl<TItem, TPath>;
 
 /**
  * Type that represents all paths in an object that lead to a value of a given type.
@@ -50,10 +50,7 @@ export type PathOf<TItem, TExpectedType> = OfImpl<TItem, TExpectedType>;
  * Path.get(item, 'a.b.c');
  * >> 1
  */
-export function get<TItem, TPath extends Path<TItem>>(
-  item: TItem,
-  path: TPath,
-): PathAt<NoInfer<TItem>, NoInfer<TPath>> {
+export function get<TItem, TPath extends Path<TItem>>(item: TItem, path: TPath): PathAt<TItem, TPath> {
   try {
     const segments = path.split(".");
 
