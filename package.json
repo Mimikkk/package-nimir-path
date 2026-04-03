@@ -18,15 +18,15 @@
     "vite",
     "vitest"
   ],
-  "homepage": "https://www.github.com/Mimikkk/dot-path",
+  "homepage": "https://www.github.com/Mimikkk/package-nimir-path",
   "bugs": {
-    "url": "https://github.com/Mimikkk/dot-path/issues"
+    "url": "https://github.com/Mimikkk/package-nimir-path/issues"
   },
   "license": "MIT",
   "author": "Daniel Zdancewicz <zdancewicz.daniel@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mimikkk/dot-path.git"
+    "url": "git+https://github.com/Mimikkk/package-nimir-path.git"
   },
   "source": "./src/dot-path.ts",
   "files": [
